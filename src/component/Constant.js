@@ -1,0 +1,20 @@
+export const weatherImage = {
+    'Partly cloudy': require('../../Assets/image/partly-cloudy.png'),
+    'Moderate rain': require('../../Assets/image/moderate-rain.png'),
+    'Moderate or heavy rain with thunder': require('../../Assets/image/thunder-strome.png'),
+    'Patchy rain possible': require('../../Assets/image/patchy-rain.png'),
+    'Sunny': require('../../Assets/image/sunny.png'),
+    'Clear': require('../../Assets/image/sunny.png'),
+    'Overcast': require('../../Assets/image/overcast.png'),
+    'Cloudy': require('../../Assets/image/cloudy.png'),
+    'Light rain': require('../../Assets/image/lignt-rain.png'),
+    'Moderate rain at times': require('../../Assets/image/moderate-rain-at-time.png'),
+    'Heavy rain': require('../../Assets/image/heavy-rain.png'),
+    'Heavy rain at times': require('../../Assets/image/heavy-rain.png'),
+    'Moderate or heavy freezing rain': require('../../Assets/image/moderate-heavy-freezing-rain.png'),
+    'Moderate or heavy rain shower': require('../../Assets/image/thunder-strome.png'),
+    'Mist': require('../../Assets/image/sunny.png'),
+    'Thundery outbreaks possible': require('../../Assets/image/thunder-strome.png'),
+    'other': require('../../Assets/image/moderate-rain.png'),
+
+}
