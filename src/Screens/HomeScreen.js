@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, StatusBar, TextInput, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, Image, StatusBar, TextInput, TouchableOpacity, ScrollView, Dimensions, PixelRatio } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -8,14 +8,32 @@ import { debounce } from 'lodash';
 import { fetchlocation, fetchweatherForecaste } from './Weather';
 import { weatherImage } from '../component/Constant';
 import { getData, storeData } from '../component/AsyncStorage';
+import {
+    responsiveHeight,
+    responsiveWidth,
+    responsiveFontSize
+} from "react-native-responsive-dimensions";
+
+import {
+    responsiveScreenHeight,
+    responsiveScreenWidth,
+    responsiveScreenFontSize
+} from "react-native-responsive-dimensions";
+import { isEnabled } from 'react-native/Libraries/Performance/Systrace';
+import { enableScreens } from 'react-native-screens';
 
 
-const { height, width } = Dimensions.get('window');
+const windowWidth = Dimensions.get('window').width;
+const scale = windowWidth / 375;
+
+// const scale = PixelRatio.getFontScale();
 
 
 
 
 const HomeScreen = () => {
+
+
     const [showLocation, setShowLocation] = useState(true)
     const [loading, setLoading] = useState(true);
     const [showSearch, setShowSearchToggle] = useState(false);
@@ -85,35 +103,52 @@ const HomeScreen = () => {
 
 
     return (
-        <ScrollView>
-            <View style={styles.mainContainer} >
-                <StatusBar backgroundColor={'#083a7f'} />
-                <Image source={require('../../Assets/image/background.jpg')} style={styles.imageStyle} />
-                {loading ?
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={{ fontSize: 40 }}>Loading...</Text>
-                    </View>
-                    : (
-                        <View style={{ width: '100%', height: '100%', marginTop: '3%' }}>
-                            <View style={styles.container2}>
-                                <View style={[styles.container2in, { height: showSearch ? '100%' : null }]}>
+
+        <View style={styles.mainContainer} >
+            {/* <ScrollView> */}
+            <StatusBar backgroundColor={'#083a7f'} />
+            <Image source={require('../../Assets/image/background.jpg')} style={styles.imageStyle} />
+            {loading ?
+                <View style={{ justifyContent: 'center', alignItems: 'center', height: responsiveHeight(100), width: responsiveWidth(100) }}>
+                    <Text style={{ fontSize: responsiveFontSize(4) }}>Loading...</Text>
+                </View>
+                : (
+
+                    <View style={{
+                        // marginTop: 10,
+                        height: responsiveHeight(100), width: responsiveWidth(100),
+
+
+                    }}>
+                        <ScrollView
+
+                            style={{
+                                height: responsiveHeight(100), width: responsiveWidth(100),
+
+
+                            }}>
+                            <View style={{ height: responsiveHeight(10), }}>
+                                <View style={[styles.container2in]}>
                                     {showSearch ? <TextInput placeholder='Search city' style={styles.inputStyle} autoCapitalize='none' onChangeText={handledebounce} /> : null}
                                     <TouchableOpacity onPress={() => setShowSearchToggle(!showSearch)} style={[styles.btnStyle, {
                                         backgroundColor: showSearch ? null : '#576574',
                                         padding: showSearch ? null : 10,
-                                        top: showSearch ? 9 : 3,
+                                        marginTop: showSearch ? responsiveHeight(0.4) : 3,
                                         // height: showSearch ? null : '10'
+                                        right: showSearch ? -6 : 0
 
 
                                     }]}>
-                                        <AntDesign name='search1' color={'#b2bec3'} size={35} style={{
-                                            paddingRight: showSearch ? 5 : null,
-                                            // color: showSearch ? 'red' : '#b2bec3'
+                                        <AntDesign name='search1' color={'#b2bec3'} style={{
+                                            // paddingRight: showSearch ? 20\ : null,
+                                            color: showSearch ? 'white' : '#b2bec3',
+                                            fontSize: responsiveFontSize(5)
+
                                         }} />
                                     </TouchableOpacity>
                                 </View>
-
                             </View>
+
 
                             {loc && showSearch ?
                                 (
@@ -135,19 +170,22 @@ const HomeScreen = () => {
                                 ) : null
                             }
                             {/* forecast section */}
-                            <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 10, width: '100%', flex: 2 }}>
-                                <Text style={{ color: '#c8d6e5', fontSize: 23, }}>{location?.name}
-                                    <Text style={{ fontSize: 26, color: 'white' }}>{" " + location?.country}</Text>
+                            <View style={{
+                                alignItems: 'center', justifyContent: 'center',
+                                height: responsiveHeight(60)
+                            }}>
+                                <Text style={{ fontSize: responsiveFontSize(3), color: '#dfe6e9' }}>{location?.name}
+                                    <Text style={{ fontSize: responsiveFontSize(4), color: 'white' }}>{" " + location?.country}</Text>
                                 </Text>
 
-                                <View style={{ width: '100%', height: '35%', marginTop: 20 }}>
-                                    <Image source={weatherImage[current?.condition?.text]} resizeMode='contain' style={{ height: '90%', width: '100%', alignSelf: 'center', }} />
+                                <View style={{ width: responsiveWidth(100), height: responsiveHeight(27), marginTop: responsiveHeight(1) }}>
+                                    <Image source={weatherImage[current?.condition?.text]} resizeMode='contain' style={{ height: responsiveHeight(15), width: responsiveWidth(100), alignSelf: 'center', }} />
                                 </View>
-                                <View style={{ marginTop: 20 }}>
-                                    <Text style={{ fontSize: 40, color: 'white', textAlign: 'center' }}>
-                                        {current?.temp_c}&#176;
+                                <View style={{}}>
+                                    <Text style={{ color: 'white', textAlign: 'center', fontSize: responsiveFontSize(6) }}>
+                                        {Math.round(current?.temp_c)}&#176;
                                     </Text>
-                                    <Text style={{ fontSize: 15, color: 'white', marginTop: 20, letterSpacing: 2, textAlign: 'center' }}>
+                                    <Text style={{ fontSize: responsiveFontSize(2), color: 'white', marginTop: 20, letterSpacing: 2, textAlign: 'center' }}>
                                         {current?.condition?.text}
                                     </Text>
                                 </View>
@@ -170,16 +208,19 @@ const HomeScreen = () => {
 
                             </View>
                             {/* forecast for next days */}
-                            <View style={{ marginTop: 10, width: '100%', height: '30%', }}>
+                            <View style={{
+                                marginTop: 10,
+                                height: responsiveHeight(27)
+                            }}>
                                 <View style={{ marginBottom: 20 }}>
 
-                                    <Text style={{ color: 'white', marginLeft: 10, letterSpacing: 3 }}>
+                                    <Text style={{ color: 'white', marginLeft: 10, letterSpacing: 3, fontSize: responsiveFontSize(2) }}>
                                         7 days forcast
                                     </Text>
 
                                 </View>
                                 <ScrollView
-                                    style={{ marginBottom: 10 }}
+                                    style={{}}
                                     horizontal
                                     showsHorizontalScrollIndicator={false}
 
@@ -194,16 +235,22 @@ const HomeScreen = () => {
 
 
                                         return (
-                                            <View style={{ height: '100%', width: width / 3.5, marginHorizontal: 10 }} key={index}>
-                                                <View style={{ height: '90%', width: '100%', borderRadius: 30, backgroundColor: '#535c68', paddingVertical: 10, }} >
-                                                    <Image source={weatherImage[item?.day?.condition?.text]} style={{ height: '50%', width: '70%', alignSelf: 'center' }} />
+                                            <View style={{
+                                                width: responsiveWidth(28),
+                                                marginHorizontal: 10,
+                                                backgroundColor: '#535c68',
+                                                borderRadius: responsiveWidth(10),
+                                                // paddingVertical: 10,
+                                                height: responsiveHeight(20),
 
-                                                    <Text style={{ color: 'white', textAlign: 'center', fontSize: 17, padding: 10 }}>{dayName}</Text>
-                                                    <Text style={{ color: 'white', textAlign: 'center' }}>{item?.day?.avgtemp_c}&#176;</Text>
-                                                    {/* <Text style={{ color: 'white', textAlign: 'center', fontSize: 6 }}>{item?.day?.condition?.text}</Text> */}
 
+                                            }} key={index}>
 
-                                                </View>
+                                                <Image source={weatherImage[item?.day?.condition?.text]} style={{ height: '50%', width: '90%', alignSelf: 'center', }} />
+
+                                                <Text style={{ color: 'white', textAlign: 'center', fontSize: responsiveFontSize(1.7), }}>{dayName}</Text>
+                                                <Text style={{ color: 'white', textAlign: 'center', fontSize: responsiveFontSize(2), paddingTop: 10 }}>{item?.day?.avgtemp_c}&#176;</Text>
+                                                {/* <Text style={{ color: 'white', textAlign: 'center', fontSize: 6 }}>{item?.day?.condition?.text}</Text> */}
                                             </View>
                                         )
                                     })}
@@ -212,11 +259,12 @@ const HomeScreen = () => {
                                 </ScrollView>
                             </View>
 
-                        </View>
-                    )}
+                        </ScrollView>
+                    </View>
+                )
+            }
 
-            </View>
-        </ScrollView>
+        </View>
     )
 }
 
@@ -225,8 +273,9 @@ export default HomeScreen
 const styles = StyleSheet.create({
     mainContainer: {
         // flex: 1,
-        height: height,
-        width: width
+        width: responsiveWidth(100),
+        height: responsiveHeight(100)
+
     },
     imageStyle: {
         height: '100%',
@@ -234,7 +283,8 @@ const styles = StyleSheet.create({
         position: 'absolute'
     },
     container2: {
-        height: '6%',
+        // height: responsiveHeight(6),
+        // width: responsiveWidth(100),
         // borderWidth: 1,
         // borderColor: 'green'
     },
@@ -244,30 +294,38 @@ const styles = StyleSheet.create({
         // flexDirection: 'row',
         // alignItems: 'center',
         // justifyContent: 'space-between',
-        width: '90%',
+        width: responsiveWidth(90),
         // margin: 10,
-        borderRadius: 30,
+        borderRadius: responsiveWidth(6),
         backgroundColor: '#8395a7',
         zIndex: 20,
         alignSelf: "center",
-        // height: '100%'
+        // height: responsiveHeight(100)
 
 
     },
     inputStyle: {
-        width: '87%', height: '100%',
-        fontSize: 20,
+        width: responsiveWidth(75),
+        // height: '100%',
+        fontSize: responsiveScreenFontSize(2.5),
         color: '#ecf0f1',
         // borderWidth: 0.3,
-        paddingLeft: 20
+        paddingLeft: 15,
+        // paddingVertical: 0
+
+
 
 
     },
     btnStyle: {
         position: 'absolute',
-        right: 6,
-        // top: ,
-        borderRadius: 40,
+        right: 0,
+        width: responsiveWidth(15),
+        height: responsiveWidth(15),
+        borderRadius: responsiveWidth(7.5)
+
+
+        // borderRadius: 40,
 
 
 
@@ -275,22 +333,26 @@ const styles = StyleSheet.create({
     },
     locationContainer: {
         backgroundColor: 'white',
-        marginHorizontal: 20,
+        // marginHorizontal: responsiveWidth(10),
         paddingRight: 24,
         borderRadius: 20,
         position: 'absolute',
-        width: '90%',
-        top: '8%',
+        width: responsiveWidth(80),
+        // top: '10%',
+        marginTop: responsiveHeight(7),
         zIndex: 20,
         // height: 500/
-        elevation: 10
+        elevation: 10,
+        alignSelf: 'center'
 
     },
     locationTextStyle: {
         // paddingVertical: 10,
-        fontSize: 16,
+        fontSize: responsiveFontSize(2),
         marginLeft: 5,
-        color: 'black'
+        color: 'black',
+        paddingVertical: responsiveHeight(1.5)
+
 
     },
     locationBtnStyle: {
@@ -298,15 +360,19 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.3,
         // borderTopWidth: 1,
         borderColor: '#576574',
-        height: 45,
+        // height: 45,
         // justifyContent: 'center',
         alignItems: 'center',
         marginLeft: 5
-
-
-
-
-
-
+    },
+    herefont: {
+        fontSize: responsiveFontSize(4 * scale)
+    },
+    heading: {
+        fontSize: responsiveFontSize(3),
+        color: 'white'
+    },
+    headingin: {
+        fontSize: responsiveFontSize(4.5)
     }
 })
